@@ -1,53 +1,66 @@
-name: job-pipeline
+name: terraform-pipeline
 
 trigger: none
 
 pool: sunilpool
 
 jobs:
-- job: terraform_install
-  displayName: Terraform Install
+- job: terraform_all
+  displayName: Terraform Init Plan Apply
   steps:
+
+  # 1️⃣ Checkout code
+  - checkout: self
+    clean: true
+
+  # 2️⃣ Install Terraform
   - task: TerraformInstaller@1
+    displayName: Install Terraform
     inputs:
       terraformVersion: 'latest'
 
- 
-- job: terraform_init
-  displayName: Terraform Init
-  dependsOn: terraform_install
-  steps:
-  - task: TerraformTask@5
+  # 3️⃣ Azure Login (Service Connection)
+  - task: AzureCLI@2
+    displayName: Azure Login
     inputs:
-      provider: azurerm
-      command: init
-      commandOptions: '-upgrade'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
-      backendServiceArm: 'sunilsvc'
-      backendAzureRmResourceGroupName: 'Rg_rohit'
-      backendAzureRmStorageAccountName: 'stgrgrohit'
-      backendAzureRmContainerName: 'stgrgrohitctr'
-      backendAzureRmKey: 'kuchhbhi.tfstate'
+      azureSubscription: 'sunilsvc'
+      scriptType: ps
+      scriptLocation: inlineScript
+      inlineScript: |
+        az account show
 
-- job: terraform_plan
-  displayName: Terraform Plan
-  dependsOn: terraform_init
-  steps:
-  - task: TerraformTask@5
+  # 4️⃣ Terraform Init
+  - task: PowerShell@2
+    displayName: Terraform Init
     inputs:
-      provider: azurerm
-      command: plan
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
-      environmentServiceNameAzureRM: 'sunilsvc'
+      targetType: inline
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      script: |
+        terraform version
 
-- job: terraform_apply
-  displayName: Terraform Apply
-  dependsOn: terraform_plan
-  steps:
-  - task: TerraformTask@5
+        terraform init `
+          -upgrade `
+          -backend-config="resource_group_name=Rg_rohit" `
+          -backend-config="storage_account_name=stgrgrohit" `
+          -backend-config="container_name=stgrgrohitctr" `
+          -backend-config="key=kuchhbhi.tfstate" `
+          -backend-config="subscription_id=4f20f78d-e549-4182-af3e-0437bdcacf18" `
+          -backend-config="use_azuread_auth=true"
+
+  # 5️⃣ Terraform Plan
+  - task: PowerShell@2
+    displayName: Terraform Plan
     inputs:
-      provider: azurerm
-      command: apply
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
-      environmentServiceNameAzureRM: 'sunilsvc'
-      commandOptions: '-auto-approve'
+      targetType: inline
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      script: |
+        terraform plan
+
+  # 6️⃣ Terraform Apply
+  - task: PowerShell@2
+    displayName: Terraform Apply
+    inputs:
+      targetType: inline
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      script: |
+        terraform apply -auto-approve

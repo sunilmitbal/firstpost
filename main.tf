@@ -7,6 +7,10 @@ terraform {
   }
 }
 
+terraform {
+  backend "azurerm" {}
+}
+
 
 provider "azurerm" {
   features {}
@@ -15,6 +19,8 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "sonil" {
-  name     = "rg_sonil"
+  name     = "Rg_rohit"
   location = "West Europe"
 }
+
+

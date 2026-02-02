@@ -21,7 +21,7 @@ resource "azurerm_resource_group" "sonil" {
 }
 
 resource "azurerm_storage_account" "tfstate" {
-  name                     = "mystorage12345"
+  name                     = "stgrgrohit"
   resource_group_name      = "Rg_rohit"
   location                 = "westeurope"
   account_tier             = "Standard"

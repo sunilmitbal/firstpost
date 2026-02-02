@@ -47,8 +47,11 @@ jobs:
           -backend-config="subscription_id=4f20f78d-e549-4182-af3e-0437bdcacf18" `
           -backend-config="use_azuread_auth=true"
 
-  # 5️⃣ (ONE-TIME) Terraform Import – RG
-  # ⚠️ Is step ko successful import ke baad COMMENT / REMOVE kar dena
+  # =====================================================
+  # ⚠️ ONE-TIME STEPS (RUN ONLY ON FIRST PIPELINE RUN)
+  # =====================================================
+
+  # 5️⃣ Import Resource Group (RUN ONCE)
   - task: PowerShell@2
     displayName: Terraform Import Resource Group (Run once)
     inputs:
@@ -58,8 +61,7 @@ jobs:
         terraform import azurerm_resource_group.sonil `
         /subscriptions/4f20f78d-e549-4182-af3e-0437bdcacf18/resourceGroups/Rg_rohit
 
-  # 6️⃣ (ONE-TIME) Terraform Import – Storage Account
-  # ⚠️ Isko bhi sirf ek baar chalana
+  # 6️⃣ Import Storage Account (RUN ONCE)
   - task: PowerShell@2
     displayName: Terraform Import Storage Account (Run once)
     inputs:
@@ -69,20 +71,8 @@ jobs:
         terraform import azurerm_storage_account.tfstate `
         /subscriptions/4f20f78d-e549-4182-af3e-0437bdcacf18/resourceGroups/Rg_rohit/providers/Microsoft.Storage/storageAccounts/stgrgrohit
 
-  # 7️⃣ Terraform Plan
-  - task: PowerShell@2
-    displayName: Terraform Plan
-    inputs:
-      targetType: inline
-      workingDirectory: $(System.DefaultWorkingDirectory)
-      script: |
-        terraform plan
+  # =====================================================
+  # 🔁 NORMAL TERRAFORM FLOW
+  # =====================================================
 
-  # 8️⃣ Terraform Apply
-  - task: PowerShell@2
-    displayName: Terraform Apply
-    inputs:
-      targetType: inline
-      workingDirectory: $(System.DefaultWorkingDirectory)
-      script: |
-        terraform apply -auto-approve
+  #

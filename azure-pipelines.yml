@@ -6,7 +6,7 @@ pool: sunilpool
 
 jobs:
 - job: terraform_all
-  displayName: Terraform Init Plan Apply
+  displayName: Terraform Init | Plan | Apply
   steps:
 
   # 1️⃣ Checkout code
@@ -29,7 +29,7 @@ jobs:
       inlineScript: |
         az account show
 
-  # 4️⃣ Terraform Init
+  # 4️⃣ Terraform Init (Remote Backend)
   - task: PowerShell@2
     displayName: Terraform Init
     inputs:
@@ -43,11 +43,33 @@ jobs:
           -backend-config="resource_group_name=Rg_rohit" `
           -backend-config="storage_account_name=stgrgrohit" `
           -backend-config="container_name=stgrgrohitctr" `
-          -backend-config="key=kuchhbhi.tfstate" `
+          -backend-config="key=terraform.tfstate" `
           -backend-config="subscription_id=4f20f78d-e549-4182-af3e-0437bdcacf18" `
           -backend-config="use_azuread_auth=true"
 
-  # 5️⃣ Terraform Plan
+  # 5️⃣ (ONE-TIME) Terraform Import – RG
+  # ⚠️ Is step ko successful import ke baad COMMENT / REMOVE kar dena
+  - task: PowerShell@2
+    displayName: Terraform Import Resource Group (Run once)
+    inputs:
+      targetType: inline
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      script: |
+        terraform import azurerm_resource_group.sonil `
+        /subscriptions/4f20f78d-e549-4182-af3e-0437bdcacf18/resourceGroups/Rg_rohit
+
+  # 6️⃣ (ONE-TIME) Terraform Import – Storage Account
+  # ⚠️ Isko bhi sirf ek baar chalana
+  - task: PowerShell@2
+    displayName: Terraform Import Storage Account (Run once)
+    inputs:
+      targetType: inline
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      script: |
+        terraform import azurerm_storage_account.tfstate `
+        /subscriptions/4f20f78d-e549-4182-af3e-0437bdcacf18/resourceGroups/Rg_rohit/providers/Microsoft.Storage/storageAccounts/stgrgrohit
+
+  # 7️⃣ Terraform Plan
   - task: PowerShell@2
     displayName: Terraform Plan
     inputs:
@@ -56,7 +78,7 @@ jobs:
       script: |
         terraform plan
 
-  # 6️⃣ Terraform Apply
+  # 8️⃣ Terraform Apply
   - task: PowerShell@2
     displayName: Terraform Apply
     inputs:

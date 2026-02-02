@@ -23,7 +23,7 @@ jobs:
   - task: AzureCLI@2
     displayName: Azure Login
     inputs:
-      azureSubscription: 'sunilsvc'
+      azureSubscription: 'FinalSVC'
       scriptType: ps
       scriptLocation: inlineScript
       inlineScript: |

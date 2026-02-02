@@ -20,4 +20,12 @@ resource "azurerm_resource_group" "sonil" {
   location = "West Europe"
 }
 
+resource "azurerm_storage_account" "tfstate" {
+  name                     = "mystorage12345"
+  resource_group_name      = "Rg_rohit"
+  location                 = "westeurope"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
 

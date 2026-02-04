@@ -1,8 +1,8 @@
-name: job-pipeline
-
+name: terraform-pipeline
 trigger: none
 
-pool: selfagent
+pool:
+  name: selfagent
 
 jobs:
 - job: terraform_install
@@ -12,7 +12,7 @@ jobs:
     inputs:
       terraformVersion: 'latest'
 
- 
+
 - job: terraform_init
   displayName: Terraform Init
   dependsOn: terraform_install
@@ -20,12 +20,14 @@ jobs:
   - task: TerraformTask@5
     inputs:
       provider: azurerm
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
+      command: init
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
       backendServiceArm: 'selfagent'
       backendAzureRmResourceGroupName: 'selfagent'
       backendAzureRmStorageAccountName: 'selfagent'
       backendAzureRmContainerName: 'selfagent'
       backendAzureRmKey: 'self.tfstate'
+
 
 - job: terraform_plan
   displayName: Terraform Plan
@@ -35,8 +37,9 @@ jobs:
     inputs:
       provider: azurerm
       command: plan
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
       environmentServiceNameAzureRM: 'selfagent'
+
 
 - job: terraform_apply
   displayName: Terraform Apply
@@ -46,7 +49,8 @@ jobs:
     inputs:
       provider: azurerm
       command: apply
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
       environmentServiceNameAzureRM: 'selfagent'
-      commandOptions: '-auto-approve'name: terraform-pipeline
+      commandOptions: '-auto-approve'
+
 

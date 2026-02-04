@@ -21,7 +21,7 @@ jobs:
     inputs:
       provider: azurerm
       command: init
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/'
       backendServiceArm: 'selfagent'
       backendAzureRmResourceGroupName: 'selfagent'
       backendAzureRmStorageAccountName: 'selfagent'
@@ -37,7 +37,7 @@ jobs:
     inputs:
       provider: azurerm
       command: plan
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/'
       environmentServiceNameAzureRM: 'selfagent'
 
 
@@ -49,7 +49,7 @@ jobs:
     inputs:
       provider: azurerm
       command: apply
-      workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+      workingDirectory: '$(System.DefaultWorkingDirectory)/'
       environmentServiceNameAzureRM: 'selfagent'
       commandOptions: '-auto-approve'
 

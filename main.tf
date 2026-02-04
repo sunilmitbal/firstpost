@@ -12,20 +12,14 @@ terraform {
 provider "azurerm" {
   features {}
 
-  subscription_id = "4f20f78d-e549-4182-af3e-0437bdcacf18"
+  subscription_id = "978ffec0-e1c4-4dd7-bc81-bcba8ae76e98"
 }
 
 resource "azurerm_resource_group" "sonil" {
-  name     = "Rg_rohit"
-  location = "West Europe"
+  name     = "selfagentgit"
+  location = "East US"
 }
 
-resource "azurerm_storage_account" "tfstate" {
-  name                     = "stgrgrohit"
-  resource_group_name      = "Rg_rohit"
-  location                 = "westeurope"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
+
 
 

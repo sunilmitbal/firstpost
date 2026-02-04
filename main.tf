@@ -5,7 +5,13 @@ terraform {
       version = "4.57.0"
     }
   }
+backend "azurerm" {
+    resource_group_name  = "selfagent"
+    storage_account_name = "selfagaent"
+    container_name       = "selfagent"
+    key                  = "selfbe.tfstate"
 }
+
 
 
 

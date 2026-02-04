@@ -5,52 +5,42 @@ pool:
   name: selfagent
 
 jobs:
-- job: terraform_install
-  displayName: Terraform Install
+- job: terraform_all
+  displayName: Terraform Init Plan Apply
   steps:
-  - task: TerraformInstaller@1
-    inputs:
-      terraformVersion: 'latest'
+  - checkout: self
 
+  # OPTIONAL if terraform already in PATH
+  # - task: TerraformInstaller@1
+  #   inputs:
+  #     terraformVersion: '1.6.6'
 
-- job: terraform_init
-  displayName: Terraform Init
-  dependsOn: terraform_install
-  steps:
   - task: TerraformTask@5
+    displayName: Terraform Init
     inputs:
       provider: azurerm
       command: init
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
+      commandOptions: '-reconfigure -upgrade'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
       backendServiceArm: 'selfagent'
       backendAzureRmResourceGroupName: 'selfagent'
       backendAzureRmStorageAccountName: 'selfagent'
       backendAzureRmContainerName: 'selfagent'
       backendAzureRmKey: 'self.tfstate'
 
-
-- job: terraform_plan
-  displayName: Terraform Plan
-  dependsOn: terraform_init
-  steps:
   - task: TerraformTask@5
+    displayName: Terraform Plan
     inputs:
       provider: azurerm
       command: plan
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
       environmentServiceNameAzureRM: 'selfagent'
 
-
-- job: terraform_apply
-  displayName: Terraform Apply
-  dependsOn: terraform_plan
-  steps:
   - task: TerraformTask@5
+    displayName: Terraform Apply
     inputs:
-      provider: 'azurerm'
-      command: 'apply'
-      workingDirectory: '$(System.DefaultWorkingDirectory)/'
-      commandOptions: '--auto-approve'
+      provider: azurerm
+      command: apply
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
       environmentServiceNameAzureRM: 'selfagent'
-
-
+      commandOptions: '-auto-approve'
